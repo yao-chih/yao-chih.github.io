@@ -4,9 +4,53 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>頁面跳轉</title>
-    <meta http-equiv="refresh" content="3; url=https://yao-chih.netlify.app">
+    <style>
+        /* 讓文字置中 */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        p {
+            font-size: 20px;
+        }
+    </style>
+    <script>
+        // 根據瀏覽器語言自動選擇顯示的內容
+        document.addEventListener("DOMContentLoaded", function () {
+            const lang = navigator.language || navigator.userLanguage; // 獲取使用者的語言設置
+            let message = "你將在 <span id='countdown'>3</span> 秒鐘後跳轉到新頁面...";
+
+            // 檢查語言並設定不同的訊息
+            if (lang.startsWith("en")) {
+                message = "You will be redirected in <span id='countdown'>3</span> seconds...";
+            } else if (lang.startsWith("ja")) {
+                message = " <span id='countdown'>3</span> 秒後に新しいページにリダイレクトされます...";
+            }
+
+            // 顯示訊息
+            document.getElementById("message").innerHTML = message;
+
+            let countdown = 3;
+            const countdownElement = document.getElementById("countdown");
+
+            // 設置倒數計時
+            const timer = setInterval(function () {
+                countdown--;
+                countdownElement.textContent = countdown;
+                if (countdown <= 0) {
+                    clearInterval(timer);
+                    window.location.href = "https://yao-chih.netlify.app"; // 跳轉頁面
+                }
+            }, 1000); // 每秒更新一次
+        });
+    </script>
 </head>
 <body>
-    <p>你將在 3 秒鐘後被轉到新頁面...</p>
+    <p id="message"></p>
 </body>
 </html>
