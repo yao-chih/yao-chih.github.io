@@ -1,9 +1,19 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-tw">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
     <title>頁面跳轉</title>
+</head>
+
+<body>
+    <div id="progressBarContainer">
+        <div id="progressBar"></div> <!-- 進度條 -->
+    </div>
+    <div id="message" style="margin-top: 20px; font-size: 24px;"></div> <!-- 文字 -->
+    <button id="skipBtn" style="margin-top: 20px; padding: 12px 24px; font-size: 1.2rem;"></button> <!-- 按鈕 -->
+
     <style>
         /* 讓文字置中 */
         body {
@@ -14,43 +24,104 @@
             margin: 0;
             font-family: Arial, sans-serif;
             text-align: center;
+            flex-direction: column; /* 讓元素縱向排列 */
         }
         p {
             font-size: 20px;
         }
+    
+        #progressBarContainer {
+          margin-top: 15px;
+          width: 100%;
+          max-width: 400px;
+          height: 10px;
+          background-color: #e0e0e0;
+          border-radius: 5px;
+          overflow: hidden;
+        }
+    
+        #progressBar {
+          height: 100%;
+          background-color: #4caf50;
+          width: 0%;
+          transition: width 1s linear;
+        }
     </style>
+
     <script>
         // 根據瀏覽器語言自動選擇顯示的內容
         document.addEventListener("DOMContentLoaded", function () {
-            const lang = navigator.language || navigator.userLanguage; // 獲取使用者的語言設置
-            let message = "你將在 <span id='countdown'>3</span> 秒鐘後跳轉到新頁面...";
-
-            // 檢查語言並設定不同的訊息
-            if (lang.startsWith("en")) {
-                message = "You will be redirected in <span id='countdown'>3</span> seconds...";
-            } else if (lang.startsWith("ja")) {
-                message = " <span id='countdown'>3</span> 秒後に新しいページにリダイレクトされます...";
+            let countdown = 3; // 倒數秒數
+            const url = "https://yao-chih.netlify.app"; // 跳轉網址
+            const total = countdown; // 總秒數
+            
+            // 跳轉函數
+            function redirectNow() {
+                window.location.href = url; // 跳轉頁面
             }
 
-            // 顯示訊息
-            document.getElementById("message").innerHTML = message;
+            if (countdown == 0){
+                redirectNow();
+            } else {
+                // 各語言對應訊息模板
+                const messages = {
+                    'zh-tw': `你將在 <span id='countdown'>${countdown}</span> 秒鐘後跳轉到新頁面...`,
+                    'en': `You will be redirected in <span id='countdown'>${countdown}</span> seconds...`,
+                    'ja': `<span id='countdown'>${countdown}</span> 秒後に新しいページにリダイレクトされます...`
+                };
 
-            let countdown = 3;
-            const countdownElement = document.getElementById("countdown");
+                // 各語言對應按鈕
+                const buttonTexts = {
+                  'zh-tw': "立即跳轉",
+                  'en': "Skip Now",
+                  'ja': "すぐに移動"
+                };
 
-            // 設置倒數計時
-            const timer = setInterval(function () {
-                countdown--;
-                countdownElement.textContent = countdown;
-                if (countdown <= 0) {
-                    clearInterval(timer);
-                    window.location.href = "https://yao-chih.netlify.app"; // 跳轉頁面
+                // 各語言對應頁面標題
+                const titles = {
+                    'zh-tw': "頁面跳轉",
+                    'en': "Page Redirect",
+                    'ja': "ページリダイレクト"
+                };
+            
+                // 獲取使用者語言
+                const lang = (navigator.language || navigator.userLanguage || 'en').toLowerCase();
+            
+                // 選擇合適的訊息
+                if (lang === "zh-hant-tw" || lang === "zh-hk" || lang === "zh-hant") {
+                    lang = "zh-tw"
                 }
-            }, 1000); // 每秒更新一次
+                const message = messages[lang] || messages['en'];
+                const buttonLabel = buttonTexts[lang] || buttonTexts['en'];
+                const pageTitle = titles[lang] || titles['en'];
+    
+                // 顯示訊息
+                document.getElementById("message").innerHTML = message;
+                document.getElementById("skipBtn").textContent = buttonLabel;
+                document.title = pageTitle;
+                
+                const countdownElement = document.getElementById("countdown");
+                const progressBar = document.getElementById("progressBar");
+    
+                // 設置倒數計時
+                const timer = setInterval(function () {
+                    countdown--;
+                    countdownElement.textContent = countdown;
+                    progressBar.style.width = ((1 - (countdown - 1) / total) * 100) + "%";
+                    
+                    if (countdown <= 0) {
+                        clearInterval(timer);
+                        redirectNow();
+                    }
+                }, 1000); // 每秒更新一次
+        
+                // 立即跳轉按鈕
+                document.getElementById("skipBtn").addEventListener("click", function () {
+                    clearInterval(timer);
+                    redirectNow();
+                });
+            }            
         });
     </script>
-</head>
-<body>
-    <p id="message"></p>
 </body>
 </html>
