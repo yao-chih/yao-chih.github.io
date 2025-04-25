@@ -122,6 +122,15 @@
                     clearInterval(timer);
                     redirectNow();
                 });
+
+                // 鍵盤跳轉
+                document.addEventListener('keydown', function (event) {
+                    // 判斷按下的是 Enter（主鍵盤或小鍵盤）或空白鍵
+                    if (event.key === 'Enter' || event.code === 'NumpadEnter' || event.code === 'Space') {
+                        clearInterval(timer);
+                        redirectNow();
+                    }
+                });
             }            
         });
     </script>
